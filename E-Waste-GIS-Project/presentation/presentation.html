@@ -1,0 +1,768 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>E-Waste Hotspot GIS Project — Academic Presentation</title>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+    }
+    body {
+      background: #060b13;
+      background-image: 
+        radial-gradient(circle at 50% 0%, rgba(30, 58, 138, 0.35) 0%, rgba(15, 23, 42, 0.6) 50%, rgba(2, 6, 23, 0.98) 100%),
+        linear-gradient(rgba(56, 189, 248, 0.05) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(56, 189, 248, 0.05) 1px, transparent 1px);
+      background-size: 100% 100%, 40px 40px, 40px 40px;
+      color: #f1f5f9;
+      overflow: hidden;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+    .slide-container {
+      flex: 1;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 24px 30px;
+      position: relative;
+    }
+    .slide {
+      display: none;
+      width: 100%;
+      max-width: 1240px;
+      height: 92%;
+      background: rgba(30, 41, 59, 0.88);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid rgba(56, 189, 248, 0.25);
+      border-radius: 16px;
+      padding: 38px 50px;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.8), 0 0 20px rgba(56, 189, 248, 0.08);
+      flex-direction: column;
+      position: relative;
+      animation: fadeIn 0.3s ease-in-out;
+    }
+    .photo-caption-tag {
+      margin-top: 8px;
+      font-size: 0.74rem;
+      color: #94a3b8;
+      text-align: center;
+      line-height: 1.35;
+    }
+    .badge-photo-evidence {
+      display: inline-block;
+      background: rgba(56, 189, 248, 0.18);
+      border: 1px solid rgba(56, 189, 248, 0.4);
+      color: #38bdf8;
+      font-weight: 800;
+      font-size: 0.68rem;
+      text-transform: uppercase;
+      padding: 2px 7px;
+      border-radius: 4px;
+      margin-bottom: 4px;
+    }
+    .slide.active {
+      display: flex;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: scale(0.98); }
+      to { opacity: 1; transform: scale(1); }
+    }
+    .slide-header {
+      border-bottom: 2px solid #334155;
+      padding-bottom: 16px;
+      margin-bottom: 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+    }
+    .slide-title {
+      font-size: 1.85rem;
+      font-weight: 800;
+      color: #38bdf8;
+      letter-spacing: -0.02em;
+    }
+    .slide-subtitle {
+      font-size: 0.95rem;
+      color: #94a3b8;
+      margin-top: 4px;
+    }
+    .slide-number {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: #64748b;
+    }
+    .slide-content {
+      flex: 1;
+      display: flex;
+      gap: 36px;
+      overflow-y: auto;
+    }
+    .col-left {
+      flex: 1.2;
+    }
+    .col-right {
+      flex: 1;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background: #0f172a;
+      border-radius: 12px;
+      border: 1px solid #334155;
+      padding: 12px;
+    }
+    .col-right img {
+      max-width: 100%;
+      max-height: 100%;
+      object-fit: contain;
+      border-radius: 8px;
+    }
+    ul.slide-bullets {
+      list-style-type: none;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+    ul.slide-bullets li {
+      font-size: 1.05rem;
+      line-height: 1.5;
+      color: #cbd5e1;
+      position: relative;
+      padding-left: 28px;
+    }
+    ul.slide-bullets li::before {
+      content: "■";
+      color: #38bdf8;
+      font-size: 0.9rem;
+      position: absolute;
+      left: 0;
+      top: 2px;
+    }
+    .highlight-box {
+      background: #0f172a;
+      border-left: 4px solid #38bdf8;
+      padding: 14px 18px;
+      border-radius: 6px;
+      margin-top: 20px;
+      font-size: 0.95rem;
+      color: #bae6fd;
+    }
+    .stat-badge {
+      display: inline-block;
+      background: #0284c7;
+      color: white;
+      font-weight: 700;
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-size: 0.9rem;
+    }
+
+    /* Navigation Footer */
+    footer {
+      background: #0f172a;
+      border-top: 1px solid #334155;
+      padding: 14px 36px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .btn {
+      background: #1e293b;
+      border: 1px solid #475569;
+      color: #f1f5f9;
+      padding: 8px 18px;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 0.9rem;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .btn:hover {
+      background: #38bdf8;
+      color: #0f172a;
+      border-color: #38bdf8;
+    }
+    .speaker-notes-drawer {
+      background: #020617;
+      border-top: 2px solid #38bdf8;
+      padding: 16px 36px;
+      font-size: 0.9rem;
+      color: #94a3b8;
+      max-height: 140px;
+      overflow-y: auto;
+      display: none;
+    }
+    .speaker-notes-drawer.open {
+      display: block;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="slide-container">
+
+    <!-- SLIDE 1 -->
+    <div class="slide active">
+      <div class="slide-header">
+        <div>
+          <div class="slide-title">GIS-Based Multi-Criteria Analysis for Identification of E-Waste Hotspots</div>
+          <div class="slide-subtitle">A Spatial Decision-Support Framework for Greater Mumbai (MCGM / BMC)</div>
+        </div>
+        <div class="slide-number">01 / 15</div>
+      </div>
+      <div class="slide-content">
+        <div class="col-left" style="display: flex; flex-direction: column; justify-content: center;">
+          <ul class="slide-bullets">
+            <li><strong>Subject:</strong> E-Waste Management & Environmental Spatial Informatics</li>
+            <li><strong>Author / Researcher:</strong> Shubham Singh</li>
+            <li><strong>Methodology:</strong> Multi-Criteria Evaluation (MCE) & Spatial Point Analysis</li>
+            <li><strong>Study Unit:</strong> 24 Administrative Municipal Wards (Wards A to T)</li>
+            <li><strong>Projected CRS:</strong> WGS 84 / UTM Zone 43N (EPSG: 32643)</li>
+          </ul>
+          <div class="highlight-box">
+            <strong>Key Objective:</strong> Develop an empirical, reproducible GIS framework to pinpoint e-waste generation clusters, assess formal accessibility deficits, and classify urban risk zones.
+          </div>
+        </div>
+        <div class="col-right" style="flex-direction: column;">
+          <img src="images/mumbai_aerial_city.jpg" alt="Greater Mumbai Aerial View" style="max-height: 85%;" />
+          <div class="photo-caption-tag">
+            <span class="badge-photo-evidence">Ground Truth Context</span><br>
+            <strong>Greater Mumbai Metropolitan Area (MCGM / BMC)</strong><br>
+            458.28 km² &bull; 12.42M Inhabitants &bull; 24 Municipal Administrative Wards
+          </div>
+        </div>
+      </div>
+      <div class="notes-content" style="display:none;">
+        Good morning respected evaluators. Today I present our project on GIS-Based Multi-Criteria Analysis for E-Waste Hotspot Identification in Greater Mumbai. This work bridges environmental policy with practical spatial analytics to target e-waste management infrastructure where it is needed most.
+      </div>
+    </div>
+
+    <!-- SLIDE 2 -->
+    <div class="slide">
+      <div class="slide-header">
+        <div>
+          <div class="slide-title">Introduction to Electronic Waste</div>
+          <div class="slide-subtitle">Global Growth, Material Flows, and Environmental Hazards</div>
+        </div>
+        <div class="slide-number">02 / 15</div>
+      </div>
+      <div class="slide-content">
+        <div class="col-left">
+          <ul class="slide-bullets">
+            <li><strong>Global Generation:</strong> 62 million metric tons generated in 2022; projected to exceed 82 million tons by 2030 (UN E-Waste Monitor).</li>
+            <li><strong>India's Role:</strong> 3rd largest generator globally (>1.7 million tons/year).</li>
+            <li><strong>Mumbai's Profile:</strong> Single largest generating urban agglomeration in India (~114,000 tons/year).</li>
+            <li><strong>The Toxicity vs Resource Paradox:</strong>
+              <br>• <em>Toxic components:</em> Lead, mercury, cadmium, hexavalent chromium, BFRs.
+              <br>• <em>Valuable resources:</em> Copper, gold, silver, palladium.
+            </li>
+          </ul>
+          <div class="highlight-box">
+            When e-waste is improperly handled, toxic constituents contaminate air, soil, and coastal aquifers while critical raw materials are lost to open landfills.
+          </div>
+        </div>
+        <div class="col-right" style="flex-direction: column;">
+          <img src="images/mumbai_ewaste_dharavi.jpg" alt="Dharavi Informal Workshop" style="max-height: 85%;" />
+          <div class="photo-caption-tag">
+            <span class="badge-photo-evidence" style="border-color: rgba(239,68,68,0.5); color: #f87171; background: rgba(239,68,68,0.15);">Ground Truth Investigation</span><br>
+            <strong>Informal E-Waste Dismantling Workshop (Dharavi, Mumbai)</strong><br>
+            Manual desoldering of circuit boards, cable stripping & hazardous recovery
+          </div>
+        </div>
+      </div>
+      <div class="notes-content" style="display:none;">
+        E-waste is growing 3 times faster than standard municipal solid waste. In a hyper-dense coastal megacity like Mumbai, unmonitored disposal creates acute environmental and toxicological risks.
+      </div>
+    </div>
+
+    <!-- SLIDE 3 -->
+    <div class="slide">
+      <div class="slide-header">
+        <div>
+          <div class="slide-title">Problem Statement & Research Question</div>
+          <div class="slide-subtitle">Structural Obstacles in Urban E-Waste Management</div>
+        </div>
+        <div class="slide-number">03 / 15</div>
+      </div>
+      <div class="slide-content">
+        <div class="col-left">
+          <ul class="slide-bullets">
+            <li><strong>Informal Sector Dominance:</strong> 85% to 90% of Mumbai's e-waste is captured by informal kabadiwalas and unorganized scrap aggregators.</li>
+            <li><strong>Crude Recycling Hazards:</strong> Manual acid leaching and open burning of insulated cables release carcinogenic dioxins and heavy metals into drainage nullahs.</li>
+            <li><strong>Infrastructural Vacuum:</strong> Formal MPCB collection centers are geographically sparse, non-incentivized, and poorly publicized.</li>
+            <li><strong>Lack of Spatial Intelligence:</strong> Blanket municipal waste policies fail to account for severe localized disparities across administrative wards.</li>
+          </ul>
+          <div class="highlight-box">
+            <strong>Core Research Question:</strong> Which wards within Greater Mumbai represent potential e-waste hotspots, and what geographic and socioeconomic factors drive this vulnerability?
+          </div>
+        </div>
+        <div class="col-right" style="flex-direction: column;">
+          <img src="images/mumbai_lamington_market.jpg" alt="Lamington Road Market" style="max-height: 85%;" />
+          <div class="photo-caption-tag">
+            <span class="badge-photo-evidence">Commercial Scrap Source</span><br>
+            <strong>Lamington Road Wholesale Electronics Bazaar (Ward D)</strong><br>
+            Hub for obsolete IT componentry, PC trade, and unregulated repair scrap
+          </div>
+        </div>
+      </div>
+      <div class="notes-content" style="display:none;">
+        The core dilemma in Mumbai is spatial: formal facilities are located in upscale zones or distant industrial estates, while informal processing hubs thrive in dense, vulnerable informal settlements.
+      </div>
+    </div>
+
+    <!-- SLIDE 4 -->
+    <div class="slide">
+      <div class="slide-header">
+        <div>
+          <div class="slide-title">Study Area: Greater Mumbai (MCGM / BMC)</div>
+          <div class="slide-subtitle">Spatial Units, Population Density, and Administrative Zones</div>
+        </div>
+        <div class="slide-number">04 / 15</div>
+      </div>
+      <div class="slide-content">
+        <div class="col-left">
+          <ul class="slide-bullets">
+            <li><strong>Administrative Framework:</strong> 24 Municipal Wards (Wards A through T).</li>
+            <li><strong>Total Population:</strong> 12,419,447 residents across 458.28 sq km.</li>
+            <li><strong>Zonal Classification:</strong>
+              <br>• <em>South Mumbai (City):</em> Wards A to G (Heritage commercial, Lamington Road, Dharavi).
+              <br>• <em>Western Suburbs:</em> Wards H to R (BKC financial hub, SEEPZ, dense residential).
+              <br>• <em>Eastern Suburbs:</em> Wards L to T (Kurla scrap market, Deonar dumping vicinity, Powai tech corridor).
+            </li>
+            <li><strong>Projected Coordinate System:</strong> WGS 84 / UTM Zone 43N (EPSG: 32643).</li>
+          </ul>
+        </div>
+        <div class="col-right">
+          <img src="../maps/study_area/map1_study_area_location.png" alt="Map 1 Study Area" />
+        </div>
+      </div>
+      <div class="notes-content" style="display:none;">
+        Map 1 establishes our 24 administrative wards. We utilized UTM Zone 43N to ensure that all distance, area, and buffer calculations maintain planar metric precision.
+      </div>
+    </div>
+
+    <!-- SLIDE 5 -->
+    <div class="slide">
+      <div class="slide-header">
+        <div>
+          <div class="slide-title">GIS Spatial Methodology</div>
+          <div class="slide-subtitle">Integrated Multi-Criteria Decision Analysis Workflow</div>
+        </div>
+        <div class="slide-number">05 / 15</div>
+      </div>
+      <div class="slide-content">
+        <div class="col-left">
+          <ul class="slide-bullets">
+            <li><strong>Step 1 — Spatial Database:</strong> 24 Wards, 128 geocoded point sources, 14 authorized facilities.</li>
+            <li><strong>Step 2 — Proximity & Buffer Analysis:</strong> 500m (pedestrian), 1km (neighborhood), 2km (suburban) service coverage zones.</li>
+            <li><strong>Step 3 — Kernel Density Estimation (KDE):</strong> Bivariate Gaussian intensity surface weighted by generation volume.</li>
+            <li><strong>Step 4 — Spatial Aggregation:</strong> Tabulation of sources, generation, and accessibility gaps per ward.</li>
+            <li><strong>Step 5 — Multi-Criteria Formulation:</strong> Linear Weighted Combination of 5 normalized criteria.</li>
+          </ul>
+        </div>
+        <div class="col-right">
+          <img src="../maps/source_distribution/map2_ewaste_sources_distribution.png" alt="Map 2 Sources" />
+        </div>
+      </div>
+      <div class="notes-content" style="display:none;">
+        Our methodological pipeline connects raw spatial boundaries and point registries with spatial buffering, nearest neighbor algorithms, and kernel density estimation.
+      </div>
+    </div>
+
+    <!-- SLIDE 6 -->
+    <div class="slide">
+      <div class="slide-header">
+        <div>
+          <div class="slide-title">Primary Field Survey Findings (n = 80)</div>
+          <div class="slide-subtitle">Empirical Insights into Citizen and Business Disposal Patterns</div>
+        </div>
+        <div class="slide-number">06 / 15</div>
+      </div>
+      <div class="slide-content">
+        <div class="col-left">
+          <ul class="slide-bullets">
+            <li><strong>Only 11.2% Formal Channel Usage:</strong> Almost exclusively restricted to large IT enterprises requiring corporate EPR destruction certificates.</li>
+            <li><strong>Dominant Residential Pathways:</strong>
+              <br>• <em>Hoarded in Cupboards/Drawers:</em> 17.5%
+              <br>• <em>Sold to Informal Kabadiwalas:</em> 27.5%
+              <br>• <em>Retail Exchange Buyback:</em> 19.9%
+            </li>
+            <li><strong>High Repair Shop Diversion:</strong> 68% of broken componentry from local repair centers is sold directly to informal scrap dealers.</li>
+            <li><strong>Regulatory Knowledge Deficit:</strong> Over 80% of citizens have little to no actionable awareness of formal e-waste drop facilities.</li>
+          </ul>
+        </div>
+        <div class="col-right" style="flex-direction: column;">
+          <img src="images/mumbai_formal_recycling.jpg" alt="Formal Recycling Facility" style="max-height: 85%;" />
+          <div class="photo-caption-tag">
+            <span class="badge-photo-evidence" style="border-color: rgba(16,185,129,0.5); color: #34d399; background: rgba(16,185,129,0.15);">Authorized Infrastructure</span><br>
+            <strong>State-of-the-Art MPCB Authorized E-Waste Processing Plant</strong><br>
+            Automated PCB sorting conveyor, air filtration & worker protective equipment
+          </div>
+        </div>
+      </div>
+      <div class="notes-content" style="display:none;">
+        The primary survey reveals that convenience and financial compensation dominate citizen decision-making. People hoard devices or sell them to kabadiwalas because formal drop points are physically inaccessible.
+      </div>
+    </div>
+
+    <!-- SLIDE 7 -->
+    <div class="slide">
+      <div class="slide-header">
+        <div>
+          <div class="slide-title">Facility Accessibility & Service Buffers</div>
+          <div class="slide-subtitle">Identifying Walkable Coverage and Spatial Service Deserts</div>
+        </div>
+        <div class="slide-number">07 / 15</div>
+      </div>
+      <div class="slide-content">
+        <div class="col-left">
+          <ul class="slide-bullets">
+            <li><strong>500m Buffer:</strong> Immediate pedestrian walking catchment (5–7 minutes).</li>
+            <li><strong>1km Buffer:</strong> Neighborhood accessibility boundary.</li>
+            <li><strong>2km Buffer:</strong> Suburban travel limit.</li>
+            <li><strong>Severe Spatial Deserts Identified:</strong>
+              <br>• <em>Ward M/East (Govandi/Deonar):</em> 87.2% unserved (>1km); 5.62 km to nearest facility.
+              <br>• <em>Ward S (Powai/Bhandup):</em> 77.8% unserved area.
+              <br>• <em>Ward P/North (Malad):</em> 76.8% unserved area despite 941k population.
+            </li>
+          </ul>
+        </div>
+        <div class="col-right">
+          <img src="../maps/facility_accessibility/map3_collection_recycling_facilities_buffers.png" alt="Map 3 Buffers" />
+        </div>
+      </div>
+      <div class="notes-content" style="display:none;">
+        Map 3 illustrates the severe service buffer deficit. The blue concentric rings show that large swathes of the eastern and western suburbs fall completely outside authorized collection zones.
+      </div>
+    </div>
+
+    <!-- SLIDE 8 -->
+    <div class="slide">
+      <div class="slide-header">
+        <div>
+          <div class="slide-title">Kernel Density Estimation (Heatmap Surface)</div>
+          <div class="slide-subtitle">Continuous Point Intensity of Potential E-Waste Generation</div>
+        </div>
+        <div class="slide-number">08 / 15</div>
+      </div>
+      <div class="slide-content">
+        <div class="col-left">
+          <ul class="slide-bullets">
+            <li><strong>Continuous Spatial Modeling:</strong> Bivariate Gaussian KDE evaluated across a 500m spatial grid.</li>
+            <li><strong>Three Dominant Generation Cores:</strong>
+              <br>1. <em>Core 1 (South Commercial Core):</em> Lamington Road hardware market and Lohar Chawl wholesale hub.
+              <br>2. <em>Core 2 (Western Industrial Tech Core):</em> Andheri East, SEEPZ, and Marol MIDC IT complexes.
+              <br>3. <em>Core 3 (Central Scrap Core):</em> The Kurla CST Road and Dharavi 13th Compound dismantling corridor.
+            </li>
+          </ul>
+        </div>
+        <div class="col-right">
+          <img src="../maps/density/map6_ewaste_source_kernel_density.png" alt="Map 6 Heatmap" />
+        </div>
+      </div>
+      <div class="notes-content" style="display:none;">
+        Kernel Density Estimation moves beyond rigid ward borders to reveal actual continuous clusters of intensity. As seen in Map 6, three hot cores drive Mumbai's e-waste dynamics.
+      </div>
+    </div>
+
+    <!-- SLIDE 9 -->
+    <div class="slide">
+      <div class="slide-header">
+        <div>
+          <div class="slide-title">E-Waste Hotspot Index (EHI) Formulation</div>
+          <div class="slide-subtitle">Multi-Criteria Evaluation (MCE) Mathematical Model</div>
+        </div>
+        <div class="slide-number">09 / 15</div>
+      </div>
+      <div class="slide-content">
+        <div class="col-left">
+          <div class="highlight-box" style="font-size: 1.15rem; font-weight: 700; text-align: center; margin-bottom: 18px;">
+            EHI = 0.30 G + 0.25 P + 0.20 C + 0.15 D + 0.10 A
+          </div>
+          <ul class="slide-bullets">
+            <li><strong>G — Generation (30%):</strong> Total monthly material mass flow (kg/month).</li>
+            <li><strong>P — Population Density (25%):</strong> Human exposure and consumer volume.</li>
+            <li><strong>C — Commercial/Industrial (20%):</strong> Enterprise IT turnover and retail stores.</li>
+            <li><strong>D — Disposal Risk (15%):</strong> Presence of informal scrap dealers, open burning, and dumps.</li>
+            <li><strong>A — Accessibility Deficit (10%):</strong> Distance to facility and % unserved buffer area.</li>
+          </ul>
+        </div>
+        <div class="col-right">
+          <img src="../charts/chart2_top10_hotspot_wards_ehi.png" alt="Top 10 Breakdown Chart" />
+        </div>
+      </div>
+      <div class="notes-content" style="display:none;">
+        All variables were scaled between 0 and 1 using linear min-max normalization. Figure 2 shows the exact stacked contributions of each of the five criteria for the top ten wards.
+      </div>
+    </div>
+
+    <!-- SLIDE 10 -->
+    <div class="slide">
+      <div class="slide-header">
+        <div>
+          <div class="slide-title">Final E-Waste Hotspot Risk Map (Main Result)</div>
+          <div class="slide-subtitle">Classification of Mumbai's 24 Wards into 5 Risk Tiers</div>
+        </div>
+        <div class="slide-number">10 / 15</div>
+      </div>
+      <div class="slide-content">
+        <div class="col-left">
+          <ul class="slide-bullets">
+            <li><strong>Risk Classification:</strong>
+              <br>• <span class="stat-badge" style="background:#ef4444;">High Risk (0.60–0.80):</span> 4 Wards (16.7%)
+              <br>• <span class="stat-badge" style="background:#facc15; color:#1e293b;">Moderate Risk (0.40–0.60):</span> 8 Wards (33.3%)
+              <br>• <span class="stat-badge" style="background:#84cc16; color:#1e293b;">Low Risk (0.20–0.40):</span> 11 Wards (45.8%)
+              <br>• <span class="stat-badge" style="background:#22c55e;">Very Low Risk (0.00–0.20):</span> 1 Ward (4.2%)
+            </li>
+            <li><strong>Top 4 Priority Hotspot Wards:</strong>
+              <br>1. <strong>Ward L (Kurla):</strong> EHI = 0.7719
+              <br>2. <strong>Ward K/East (Andheri East):</strong> EHI = 0.7516
+              <br>3. <strong>Ward G/North (Dharavi):</strong> EHI = 0.7248
+              <br>4. <strong>Ward M/East (Govandi/Deonar):</strong> EHI = 0.6385
+            </li>
+          </ul>
+        </div>
+        <div class="col-right">
+          <img src="../maps/hotspot_map/map8_final_ewaste_hotspot_risk.png" alt="Map 8 Final Hotspots" />
+        </div>
+      </div>
+      <div class="notes-content" style="display:none;">
+        Map 8 is our primary project output. Four wards emerge in orange as High Risk: Kurla, Andheri East, Dharavi, and Govandi. These four wards require the immediate focus of municipal solid waste authorities.
+      </div>
+    </div>
+
+    <!-- SLIDE 11 -->
+    <div class="slide">
+      <div class="slide-header">
+        <div>
+          <div class="slide-title">In-Depth Analysis of Priority Hotspots</div>
+          <div class="slide-subtitle">Geographic Drivers Behind the Top Identified Wards</div>
+        </div>
+        <div class="slide-number">11 / 15</div>
+      </div>
+      <div class="slide-content">
+        <div class="col-left">
+          <ul class="slide-bullets">
+            <li><strong>Ward L (Kurla — Rank #1):</strong> Convergence of extreme density (56,743/sq km), 902k residents, major informal scrap dismantling market along CST Road, and Mithi River dumping vulnerability.</li>
+            <li><strong>Ward K/East (Andheri East — Rank #2):</strong> Highest monthly e-waste volume (636.5 Tons/mo) driven by SEEPZ electronics SEZ and MIDC corporate hardware turnover.</li>
+            <li><strong>Ward G/North (Dharavi — Rank #3):</strong> National hub of informal plastic and circuit recycling (13th Compound) operating in hyper-dense residential slums (65,828/sq km).</li>
+            <li><strong>Ward M/East (Govandi/Deonar — Rank #4):</strong> Environmental justice hotspot; highest facility distance (5.62 km) and 87% unserved area near Deonar dumping ground.</li>
+          </ul>
+        </div>
+        <div class="col-right">
+          <img src="../charts/chart3_correlation_population_vs_ewaste.png" alt="Correlation Chart" />
+        </div>
+      </div>
+      <div class="notes-content" style="display:none;">
+        Each hotspot has unique geographic characteristics: Kurla and Dharavi are informal scrap aggregators; Andheri East is an industrial and corporate generation giant; Govandi suffers from severe infrastructure deprivation.
+      </div>
+    </div>
+
+    <!-- SLIDE 12 -->
+    <div class="slide">
+      <div class="slide-header">
+        <div>
+          <div class="slide-title">Sensitivity Analysis & Model Validation</div>
+          <div class="slide-subtitle">Testing Stability Against 4 Alternative Weighting Schemes</div>
+        </div>
+        <div class="slide-number">12 / 15</div>
+      </div>
+      <div class="slide-content">
+        <div class="col-left">
+          <ul class="slide-bullets">
+            <li><strong>Tested Against 4 Distinct Models:</strong>
+              <br>• Model 1: Baseline (0.30G, 0.25P, 0.20C, 0.15D, 0.10A)
+              <br>• Model 2: Informal Risk Focused (0.25D, 0.15A)
+              <br>• Model 3: Generation & Pop Focused (0.40G, 0.30P)
+              <br>• Model 4: Equal Weights (0.20 each)
+            </li>
+            <li><strong>Exceptional Spearman Rank Correlation:</strong>
+              <br>• Baseline vs Model 2: <strong>r = 0.9643</strong>
+              <br>• Baseline vs Model 3: <strong>r = 0.9904</strong>
+              <br>• Baseline vs Model 4: <strong>r = 0.9530</strong>
+            </li>
+            <li><strong>Rank Stability:</strong> The top 4 priority hotspots remained completely unchanged across all model permutations!</li>
+          </ul>
+        </div>
+        <div class="col-right">
+          <img src="../charts/chart6_sensitivity_analysis_weights.png" alt="Sensitivity Chart" />
+        </div>
+      </div>
+      <div class="notes-content" style="display:none;">
+        To ensure scientific credibility, we performed sensitivity analysis. As Figure 6 shows, ward priority ranks remain remarkably consistent, proving that the results are not biased by subjective weight selection.
+      </div>
+    </div>
+
+    <!-- SLIDE 13 -->
+    <div class="slide">
+      <div class="slide-header">
+        <div>
+          <div class="slide-title">Interactive WebGIS Decision Support Dashboard</div>
+          <div class="slide-subtitle">Standalone Decision-Support Tool for Municipal Officers</div>
+        </div>
+        <div class="slide-number">13 / 15</div>
+      </div>
+      <div class="slide-content">
+        <div class="col-left">
+          <ul class="slide-bullets">
+            <li><strong>Built with Leaflet.js:</strong> Interactive web map operating directly in any browser without server dependencies.</li>
+            <li><strong>Key Interactive Capabilities:</strong>
+              <br>• Click-to-inspect ward sidebar with full EHI score and (G, P, C, D, A) metric breakdown.
+              <br>• Interactive layer toggles for 1km Walkable Buffers, Point Sources, and Recyclers.
+              <br>• Quick-jump navigation panel for Top 10 Hotspots with map zoom animations.
+              <br>• Real-time population, volume, and service deficit KPI statistics.
+            </li>
+          </ul>
+          <div class="highlight-box">
+            Available at: <code>dashboard/index.html</code>
+          </div>
+        </div>
+        <div class="col-right" style="flex-direction: column; background: #090d16; padding: 16px;">
+          <img src="images/mumbai_smart_kiosk.jpg" alt="Smart IoT Kiosk BKC" style="max-height: 70%;" />
+          <div class="photo-caption-tag" style="margin-top: 6px;">
+            <span class="badge-photo-evidence">Real-Time Telemetry & IoT</span><br>
+            <strong>Smart IoT E-Waste Kiosk & Real-Time WebGIS Integration</strong><br>
+            <a href="../dashboard/index.html" target="_blank" style="display:inline-block; margin-top:8px; background:linear-gradient(90deg,#0284c7,#10b981); color:white; padding:6px 14px; border-radius:6px; font-weight:700; text-decoration:none; font-size:0.78rem;">
+              ⚡ Open Live Real-Time WebGIS Dashboard ↗
+            </a>
+          </div>
+        </div>
+      </div>
+      <div class="notes-content" style="display:none;">
+        We also built a standalone WebGIS dashboard that allows decision-makers to interactively click any ward, inspect its multi-criteria breakdown, and view tailored recommendations.
+      </div>
+    </div>
+
+    <!-- SLIDE 14 -->
+    <div class="slide">
+      <div class="slide-header">
+        <div>
+          <div class="slide-title">Location-Specific Recommendations</div>
+          <div class="slide-subtitle">Translating GIS Findings into Precision Interventions</div>
+        </div>
+        <div class="slide-number">14 / 15</div>
+      </div>
+      <div class="slide-content">
+        <div class="col-left" style="flex:1.2;">
+          <ul class="slide-bullets">
+            <li><strong>Ward L (Kurla CST Road):</strong> Form an Authorized Scrap Aggregator Cooperative; offer fair-market buyback prices to incentivize informal dealers into legal reverse supply chains.</li>
+            <li><strong>Ward K/East (Andheri SEEPZ/MIDC):</strong> Institute mandatory corporate EPR asset auditing to prevent institutional IT liquidation into uncertified hands.</li>
+            <li><strong>Ward G/North (Dharavi 13th Compound):</strong> Upgrade informal sheds into a regulated "Green Dismantling Cluster" equipped with mechanical shredders and worker PPE.</li>
+            <li><strong>Ward M/East (Govandi/Deonar):</strong> Deploy bi-weekly municipal mobile collection vans to bridge the 5.6 km facility void and eliminate perimeter wire burning.</li>
+            <li><strong>Suburban Corridors:</strong> Install dedicated e-waste drop bins at all Western and Central railway stations.</li>
+          </ul>
+        </div>
+        <div class="col-right" style="flex:0.9; flex-direction: column;">
+          <img src="images/mumbai_ewaste_truck.jpg" alt="MCGM Collection Truck" style="max-height: 82%;" />
+          <div class="photo-caption-tag">
+            <span class="badge-photo-evidence">Logistics Deployment</span><br>
+            <strong>MCGM Dedicated E-Waste Reverse Logistics Fleet</strong><br>
+            Mobile pickup vans connecting unserved suburban pockets
+          </div>
+        </div>
+      </div>
+      <div class="notes-content" style="display:none;">
+        Our spatial findings translate into precision interventions rather than generic advice. Formalizing the informal economy in Kurla and Dharavi, enforcing corporate EPR in SEEPZ, and deploying mobile vans in Govandi will produce immediate environmental benefits.
+      </div>
+    </div>
+
+    <!-- SLIDE 15 -->
+    <div class="slide">
+      <div class="slide-header">
+        <div>
+          <div class="slide-title">Conclusion & Project Summary</div>
+          <div class="slide-subtitle">GIS as a Pillar for Sustainable Circular E-Waste Management</div>
+        </div>
+        <div class="slide-number">15 / 15</div>
+      </div>
+      <div class="slide-content">
+        <div class="col-left" style="flex:1; display:flex; flex-direction:column; justify-content:center;">
+          <ul class="slide-bullets" style="font-size: 1.15rem; gap: 20px;">
+            <li>✓ Successfully developed a practical, reproducible, GIS-based multi-criteria spatial framework for Greater Mumbai.</li>
+            <li>✓ Produced 8 publication-grade cartographic maps (300 DPI) and 7 statistical figures.</li>
+            <li>✓ Formulated and validated the E-Waste Hotspot Index (EHI), demonstrating high mathematical robustness ($r_s > 0.95$).</li>
+            <li>✓ Provided actionable, location-specific spatial recommendations for municipal authorities and recyclers.</li>
+          </ul>
+          <div class="highlight-box" style="margin-top: 30px; font-size: 1.1rem; text-align: center;">
+            <strong>Thank you! Open for Questions and Discussion.</strong>
+          </div>
+        </div>
+      </div>
+      <div class="notes-content" style="display:none;">
+        To conclude, this project proves that GIS spatial analysis is an indispensable tool for urban environmental management. It empowers municipal bodies to transition from passive regulation to targeted, proactive interventions. Thank you very much, and I welcome any questions from the panel.
+      </div>
+    </div>
+
+  </div>
+
+  <div id="notes-drawer" class="speaker-notes-drawer">
+    <strong style="color: #38bdf8;">SPEAKER NOTES:</strong>
+    <p id="notes-text" style="margin-top: 4px; line-height: 1.4;"></p>
+  </div>
+
+  <footer>
+    <div style="display: flex; gap: 12px; align-items: center;">
+      <button id="notes-toggle-btn" class="btn">Toggle Speaker Notes [N]</button>
+      <a href="../dashboard/index.html" target="_blank" class="btn" style="text-decoration:none; display:inline-flex; align-items:center; gap:6px; background:rgba(2,132,199,0.3); border-color:#38bdf8; color:#38bdf8;">
+        ⚡ Launch Real-Time WebGIS Dashboard ↗
+      </a>
+    </div>
+    <div style="display: flex; gap: 12px;">
+      <button id="prev-btn" class="btn">◄ Previous</button>
+      <button id="next-btn" class="btn">Next ►</button>
+    </div>
+  </footer>
+
+  <script>
+    const slides = document.querySelectorAll('.slide');
+    let currentSlide = 0;
+    const notesDrawer = document.getElementById('notes-drawer');
+    const notesText = document.getElementById('notes-text');
+
+    function showSlide(index) {
+      slides.forEach((s, i) => {
+        s.classList.toggle('active', i === index);
+      });
+      currentSlide = index;
+
+      // Update speaker notes
+      const activeNotes = slides[currentSlide].querySelector('.notes-content');
+      notesText.innerText = activeNotes ? activeNotes.innerText.trim() : 'No speaker notes for this slide.';
+    }
+
+    document.getElementById('prev-btn').addEventListener('click', () => {
+      if (currentSlide > 0) showSlide(currentSlide - 1);
+    });
+
+    document.getElementById('next-btn').addEventListener('click', () => {
+      if (currentSlide < slides.length - 1) showSlide(currentSlide + 1);
+    });
+
+    document.getElementById('notes-toggle-btn').addEventListener('click', () => {
+      notesDrawer.classList.toggle('open');
+    });
+
+    // Keyboard navigation
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowRight' || e.key === ' ') {
+        if (currentSlide < slides.length - 1) showSlide(currentSlide + 1);
+      } else if (e.key === 'ArrowLeft') {
+        if (currentSlide > 0) showSlide(currentSlide - 1);
+      } else if (e.key === 'n' || e.key === 'N') {
+        notesDrawer.classList.toggle('open');
+      }
+    });
+
+    // Initialize first slide notes
+    showSlide(0);
+  </script>
+</body>
+</html>
