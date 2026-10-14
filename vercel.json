@@ -1,0 +1,21 @@
+{
+  "version": 2,
+  "name": "mumbai-ewaste-gis",
+  "cleanUrls": true,
+  "trailingSlash": false,
+  "rewrites": [
+    { "source": "/presentation", "destination": "/E-Waste-GIS-Project/presentation/presentation.html" },
+    { "source": "/dashboard", "destination": "/E-Waste-GIS-Project/dashboard/index.html" },
+    { "source": "/", "destination": "/index.html" }
+  ],
+  "headers": [
+    {
+      "source": "/(.*)",
+      "headers": [
+        { "key": "X-Content-Type-Options", "value": "nosniff" },
+        { "key": "X-Frame-Options", "value": "SAMEORIGIN" },
+        { "key": "Access-Control-Allow-Origin", "value": "*" }
+      ]
+    }
+  ]
+}
