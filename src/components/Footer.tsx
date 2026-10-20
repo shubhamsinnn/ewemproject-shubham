@@ -1,0 +1,88 @@
+import React from 'react';
+import { Leaf } from 'lucide-react';
+
+export const Footer: React.FC = () => {
+  const currentYear = new Date().getFullYear();
+
+  const scrollTo = (id: string) => {
+    const el = document.getElementById(id);
+    if (el) {
+      el.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
+
+  return (
+    <footer className="footer-section">
+      <div className="container">
+        <div className="footer-grid">
+          {/* Brand & Roll Number */}
+          <div className="footer-brand">
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
+              <div 
+                style={{
+                  width: '28px',
+                  height: '28px',
+                  borderRadius: '6px',
+                  background: 'var(--color-maroon-primary)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  color: '#FFFFFF'
+                }}
+              >
+                <Leaf size={16} />
+              </div>
+              <h3 style={{ margin: 0 }}>Shamita Chavan</h3>
+            </div>
+            <p>Roll No. 24101C0066 &bull; EWEM (VEC02) Academic E-Portfolio</p>
+            <p className="footer-quote">
+              &ldquo;An ongoing record of learning, practice, and academic growth.&rdquo;
+            </p>
+          </div>
+
+          {/* Quick Navigation Links */}
+          <div className="footer-links-group">
+            <div className="footer-nav-col">
+              <span>Navigation</span>
+              <a href="#home" onClick={(e) => { e.preventDefault(); scrollTo('home'); }}>
+                Home
+              </a>
+              <a href="#overview" onClick={(e) => { e.preventDefault(); scrollTo('overview'); }}>
+                Overview
+              </a>
+              <a href="#assignments" onClick={(e) => { e.preventDefault(); scrollTo('assignments'); }}>
+                Assignment Spiral
+              </a>
+              <a href="#about" onClick={(e) => { e.preventDefault(); scrollTo('about'); }}>
+                About Me
+              </a>
+            </div>
+
+            <div className="footer-nav-col">
+              <span>Course &amp; Academic Info</span>
+              <span style={{ color: '#FFFFFF', fontSize: '0.88rem', textTransform: 'none', fontWeight: 600 }}>
+                EWEM (VEC02)
+              </span>
+              <span style={{ color: 'var(--color-soft-rose)', fontSize: '0.85rem', textTransform: 'none', fontWeight: 500 }}>
+                E-Waste &amp; Environmental Management
+              </span>
+              <span style={{ color: 'rgba(255, 255, 255, 0.65)', fontSize: '0.82rem', textTransform: 'none' }}>
+                B.Tech Information Technology &bull; {currentYear}
+              </span>
+            </div>
+          </div>
+        </div>
+
+        {/* Bottom copyright and disclaimer */}
+        <div className="footer-bottom">
+          <div>
+            &copy; {currentYear} Shamita Chavan &bull; Roll No. 24101C0066 &bull; EWEM Coursework Portfolio
+          </div>
+          <div>
+            Value Education Course (VEC02) &bull; 2 Credits &bull; All Rights Reserved
+          </div>
+        </div>
+      </div>
+    </footer>
+  );
+};
