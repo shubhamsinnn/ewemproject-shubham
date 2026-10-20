@@ -14,12 +14,13 @@ export const Overview: React.FC<OverviewProps> = ({ stats }) => {
         <div className="section-header">
           <div className="section-badge">
             <Layers size={14} />
-            <span>Academic Metrics</span>
+            <span>Course Architecture</span>
           </div>
           <h2 className="section-title">Portfolio Overview</h2>
           <p className="section-subtitle">
-            This portfolio organizes my academic assignments and supporting materials in one place. 
-            Each entry explains its purpose, key concepts, tasks completed, and the work submitted.
+            This portfolio organizes my coursework assignments and supporting submission materials for 
+            <strong> EWEM — E-Waste &amp; Environmental Management (VEC02)</strong>. 
+            Each assignment documents its purpose, technical concepts, learning synthesis, and uploaded deliverables.
           </p>
         </div>
 
@@ -33,18 +34,20 @@ export const Overview: React.FC<OverviewProps> = ({ stats }) => {
             </div>
             <div className="stat-value">{stats.totalAssignments}</div>
             <div className="stat-title">Assignments</div>
-            <div className="stat-desc">Total academic assignments cataloged</div>
+            <div className="stat-desc">Complete EWEM spiral sequence (00–08)</div>
           </div>
 
-          {/* Unique Subjects */}
+          {/* Course Subject */}
           <div className="stat-card emerald">
             <div className="stat-card-accent" />
             <div className="stat-icon-wrapper">
               <Layers size={22} />
             </div>
-            <div className="stat-value">{stats.uniqueSubjects}</div>
-            <div className="stat-title">Subjects</div>
-            <div className="stat-desc">Unique Information Technology courses</div>
+            <div className="stat-value" style={{ fontSize: '1.75rem', letterSpacing: '-0.02em' }}>
+              VEC02
+            </div>
+            <div className="stat-title">EWEM Course</div>
+            <div className="stat-desc">E-Waste &amp; Environmental Management</div>
           </div>
 
           {/* Submitted Files */}
@@ -74,24 +77,24 @@ export const Overview: React.FC<OverviewProps> = ({ stats }) => {
         <div className="learning-objectives-card">
           <div className="objectives-header">
             <Target size={20} color="#16A878" />
-            <h3>Learning Objectives</h3>
+            <h3>EWEM Learning Objectives &amp; Academic Outcomes</h3>
           </div>
           <div className="objectives-grid">
             <div className="objective-item">
               <Check size={18} />
-              <span>Strengthen conceptual understanding.</span>
+              <span>Strengthen conceptual understanding of e-waste hazards, toxicology, and statutory frameworks (RoHS &amp; EPR).</span>
             </div>
             <div className="objective-item">
               <Check size={18} />
-              <span>Apply theoretical knowledge to practical problems.</span>
+              <span>Apply theoretical engineering knowledge to practical challenges (carbon footprint audits, data modeling, AI upcycling).</span>
             </div>
             <div className="objective-item">
               <Check size={18} />
-              <span>Develop technical and analytical skills.</span>
+              <span>Analyze circular economy mechanics: urban mining, precious metal recovery, and certified industrial recycling.</span>
             </div>
             <div className="objective-item">
               <Check size={18} />
-              <span>Maintain an organized record of academic work.</span>
+              <span>Maintain an organized, verifiable, and transparent digital record of academic submissions.</span>
             </div>
           </div>
         </div>

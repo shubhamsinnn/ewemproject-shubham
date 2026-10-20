@@ -1,5 +1,5 @@
 import React from 'react';
-import { BookOpen } from 'lucide-react';
+import { Leaf } from 'lucide-react';
 
 export const Footer: React.FC = () => {
   const currentYear = new Date().getFullYear();
@@ -30,11 +30,11 @@ export const Footer: React.FC = () => {
                   color: '#FFFFFF'
                 }}
               >
-                <BookOpen size={16} />
+                <Leaf size={16} />
               </div>
               <h3 style={{ margin: 0 }}>Shubham Singh</h3>
             </div>
-            <p>Roll No. 24101C0076 &bull; Academic E-Portfolio</p>
+            <p>Roll No. 24101C0076 &bull; EWEM (VEC02) Academic E-Portfolio</p>
             <p className="footer-quote">
               &ldquo;An ongoing record of learning, practice, and academic growth.&rdquo;
             </p>
@@ -51,7 +51,7 @@ export const Footer: React.FC = () => {
                 Overview
               </a>
               <a href="#assignments" onClick={(e) => { e.preventDefault(); scrollTo('assignments'); }}>
-                Assignments
+                Assignment Spiral
               </a>
               <a href="#about" onClick={(e) => { e.preventDefault(); scrollTo('about'); }}>
                 About Me
@@ -59,15 +59,15 @@ export const Footer: React.FC = () => {
             </div>
 
             <div className="footer-nav-col">
-              <span>Programme</span>
+              <span>Course &amp; Academic Info</span>
               <span style={{ color: '#FFFFFF', fontSize: '0.88rem', textTransform: 'none', fontWeight: 600 }}>
-                B.Tech Engineering
+                EWEM (VEC02)
               </span>
               <span style={{ color: 'var(--color-mint)', fontSize: '0.85rem', textTransform: 'none', fontWeight: 500 }}>
-                Information Technology
+                E-Waste &amp; Environmental Management
               </span>
               <span style={{ color: 'rgba(255, 255, 255, 0.6)', fontSize: '0.82rem', textTransform: 'none' }}>
-                Academic Year {currentYear}
+                B.Tech Information Technology &bull; {currentYear}
               </span>
             </div>
           </div>
@@ -76,10 +76,10 @@ export const Footer: React.FC = () => {
         {/* Bottom copyright and disclaimer */}
         <div className="footer-bottom">
           <div>
-            &copy; {currentYear} Shubham Singh &bull; Roll No. 24101C0076 &bull; All Academic Rights Reserved.
+            &copy; {currentYear} Shubham Singh &bull; Roll No. 24101C0076 &bull; EWEM Coursework Portfolio
           </div>
           <div>
-            Information Technology &bull; B.Tech Degree Portfolio
+            Value Education Course (VEC02) &bull; 2 Credits &bull; All Rights Reserved
           </div>
         </div>
       </div>

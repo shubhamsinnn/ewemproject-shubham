@@ -1,5 +1,5 @@
 import React from 'react';
-import { Terminal, ShieldCheck, Cpu } from 'lucide-react';
+import { Terminal, ShieldCheck, Leaf } from 'lucide-react';
 
 export const HeroGraphic: React.FC = () => {
   return (
@@ -11,8 +11,8 @@ export const HeroGraphic: React.FC = () => {
         {/* Card Header */}
         <div className="graphic-header">
           <div className="graphic-badge">
-            <Cpu size={14} />
-            <span>IT // ACADEMIC RECORD</span>
+            <Leaf size={14} color="#16A878" />
+            <span>EWEM // VEC02 RECORD</span>
           </div>
           <div className="graphic-dots">
             <span className="graphic-dot"></span>
@@ -27,7 +27,7 @@ export const HeroGraphic: React.FC = () => {
             <span>SS</span>
           </div>
           <div className="graphic-info-title">Shubham Singh</div>
-          <div className="graphic-info-sub">Information Technology &bull; B.Tech</div>
+          <div className="graphic-info-sub">E-Waste &amp; Environmental Management (VEC02)</div>
         </div>
 
         {/* Decorative Tech SVG Line */}
@@ -51,18 +51,18 @@ export const HeroGraphic: React.FC = () => {
         {/* Dynamic Metric Indicator Row */}
         <div className="graphic-metrics-row">
           <div className="metric-box">
-            <span className="metric-num">B.Tech</span>
-            <span className="metric-txt">Programme</span>
+            <span className="metric-num">VEC02</span>
+            <span className="metric-txt">Course Code</span>
           </div>
           <div className="metric-box">
-            <span className="metric-num">IT</span>
-            <span className="metric-txt">Branch</span>
+            <span className="metric-num">2 Credits</span>
+            <span className="metric-txt">Weighting</span>
           </div>
           <div className="metric-box">
             <span className="metric-num" style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: '3px' }}>
-              <ShieldCheck size={14} color="#16A878" /> Verified
+              <ShieldCheck size={14} color="#16A878" /> 24101C0076
             </span>
-            <span className="metric-txt">Academic ID</span>
+            <span className="metric-txt">Student ID</span>
           </div>
         </div>
 
@@ -82,7 +82,7 @@ export const HeroGraphic: React.FC = () => {
           }}
         >
           <Terminal size={13} color="#16A878" />
-          <span>student@portfolio:~$ load --assignments</span>
+          <span>shubham@ewem-portfolio:~$ load --assignments-spiral</span>
         </div>
       </div>
     </div>

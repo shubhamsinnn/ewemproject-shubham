@@ -2,6 +2,7 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { Navbar } from './components/Navbar';
 import { Hero } from './components/Hero';
 import { Overview } from './components/Overview';
+import { AssignmentIndex } from './components/AssignmentIndex';
 import { AssignmentSection } from './components/AssignmentSection';
 import { FilePreviewModal } from './components/FilePreviewModal';
 import { About } from './components/About';
@@ -13,27 +14,12 @@ import {
   saveFileRecord, 
   deleteFileRecord 
 } from './utils/storage';
-import { BookOpen, Filter, Info } from 'lucide-react';
-
-const LOCAL_STORAGE_ASSIGNMENTS_KEY = 'shubham_portfolio_custom_assignments';
+import { BookOpen, ShieldAlert } from 'lucide-react';
 
 export const App: React.FC = () => {
-  // Load customized assignments from localStorage if user edited them inline, else use initial data
-  const [assignments, setAssignments] = useState<Assignment[]>(() => {
-    try {
-      const saved = localStorage.getItem(LOCAL_STORAGE_ASSIGNMENTS_KEY);
-      if (saved) {
-        return JSON.parse(saved);
-      }
-    } catch (e) {
-      console.error('Error loading saved assignments:', e);
-    }
-    return initialAssignments;
-  });
-
+  const [assignments] = useState<Assignment[]>(initialAssignments);
   const [uploadedFiles, setUploadedFiles] = useState<Record<string, UploadedFileRecord>>({});
   const [activeSection, setActiveSection] = useState<string>('home');
-  const [selectedSubjectFilter, setSelectedSubjectFilter] = useState<string>('ALL');
   const [previewRecord, setPreviewRecord] = useState<UploadedFileRecord | null>(null);
 
   // Load uploaded files from IndexedDB on component mount
@@ -68,31 +54,18 @@ export const App: React.FC = () => {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  // Dynamically calculate overview stats from real assignments & uploaded records
+  // Dynamically calculate overview stats from EWEM assignments & uploaded records
   const stats: OverviewStats = useMemo(() => {
     const totalAssignments = assignments.length;
-    const uniqueSubjects = new Set(assignments.map((a) => a.subject.trim())).size;
     const submittedCount = assignments.filter((a) => !!uploadedFiles[a.id]).length;
     const pendingCount = totalAssignments - submittedCount;
 
     return {
       totalAssignments,
-      uniqueSubjects,
       submittedCount,
       pendingCount,
     };
   }, [assignments, uploadedFiles]);
-
-  // Unique list of subjects for filtering
-  const allSubjects = useMemo(() => {
-    return Array.from(new Set(assignments.map((a) => a.subject.trim())));
-  }, [assignments]);
-
-  // Filtered assignments based on user selection
-  const filteredAssignments = useMemo(() => {
-    if (selectedSubjectFilter === 'ALL') return assignments;
-    return assignments.filter((a) => a.subject.trim() === selectedSubjectFilter);
-  }, [assignments, selectedSubjectFilter]);
 
   // File Upload Handler (Stores in IndexedDB)
   const handleUploadSuccess = async (assignmentId: string, file: File) => {
@@ -126,17 +99,6 @@ export const App: React.FC = () => {
     setTimeout(() => URL.revokeObjectURL(url), 1000);
   };
 
-  // In-line Assignment Update Handler
-  const handleUpdateAssignment = (updated: Assignment) => {
-    const nextList = assignments.map((a) => (a.id === updated.id ? updated : a));
-    setAssignments(nextList);
-    try {
-      localStorage.setItem(LOCAL_STORAGE_ASSIGNMENTS_KEY, JSON.stringify(nextList));
-    } catch (e) {
-      console.error('Failed to save to localStorage:', e);
-    }
-  };
-
   return (
     <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
       {/* SECTION A: Navigation Bar */}
@@ -156,15 +118,16 @@ export const App: React.FC = () => {
             <div className="section-header">
               <div className="section-badge">
                 <BookOpen size={14} />
-                <span>Coursework &amp; Submissions</span>
+                <span>EWEM Assignment Spiral</span>
               </div>
-              <h2 className="section-title">My Assignments</h2>
+              <h2 className="section-title">Coursework &amp; Submissions</h2>
               <p className="section-subtitle">
-                Explore the concepts, tasks, and submissions that document my academic learning.
+                Official curriculum sequence for <strong>EWEM — E-Waste &amp; Environmental Management (VEC02)</strong>. 
+                Explore the technical concepts, activities, and submit your individual coursework deliverables below.
               </p>
             </div>
 
-            {/* Academic Notice & Guidance Banner */}
+            {/* Academic Notice Banner */}
             <div
               style={{
                 backgroundColor: 'var(--color-primary-blue-light)',
@@ -179,55 +142,23 @@ export const App: React.FC = () => {
                 color: 'var(--color-navy)',
               }}
             >
-              <Info size={20} color="#1769FF" style={{ flexShrink: 0, marginTop: '2px' }} />
+              <ShieldAlert size={20} color="#1769FF" style={{ flexShrink: 0, marginTop: '2px' }} />
               <div>
-                <strong>Academic Data Integrity:</strong> The entries below serve as structured, 
-                customizable placeholders corresponding to core Information Technology subjects. 
-                You can upload submissions via drag-and-drop (persisted across refreshes in IndexedDB) 
-                or customize topics and overviews anytime in <code>src/data/assignments.ts</code>.
+                <strong>Student Submission Integrity:</strong> Each assignment entry below represents a distinct deliverable from the EWEM course spiral. 
+                Use the dedicated <strong>"Upload Your Submission"</strong> area on each assignment to upload your own files (PDF, DOCX, PPTX, XLSX, ZIP, PNG, JPG). 
+                All submissions are stored persistently in your browser's IndexedDB storage and remain accessible upon page refresh.
               </div>
             </div>
 
-            {/* Subject Filters Toolbar */}
-            <div
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: '8px',
-                flexWrap: 'wrap',
-                marginBottom: '28px',
-                paddingBottom: '16px',
-                borderBottom: '1px solid var(--color-border)',
-              }}
-            >
-              <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.82rem', fontWeight: 700, color: 'var(--color-text-muted)', marginRight: '8px' }}>
-                <Filter size={14} />
-                <span>Filter by Subject:</span>
-              </div>
-
-              <button
-                type="button"
-                className={`btn btn-sm ${selectedSubjectFilter === 'ALL' ? 'btn-primary' : 'btn-secondary'}`}
-                onClick={() => setSelectedSubjectFilter('ALL')}
-              >
-                All Subjects ({assignments.length})
-              </button>
-
-              {allSubjects.map((subject) => (
-                <button
-                  key={subject}
-                  type="button"
-                  className={`btn btn-sm ${selectedSubjectFilter === subject ? 'btn-primary' : 'btn-secondary'}`}
-                  onClick={() => setSelectedSubjectFilter(subject)}
-                >
-                  {subject}
-                </button>
-              ))}
-            </div>
+            {/* Assignment Spiral Navigation Index */}
+            <AssignmentIndex 
+              assignments={assignments} 
+              uploadedFiles={uploadedFiles} 
+            />
 
             {/* Vertically Stacked List of Assignment Sections */}
             <div className="assignments-container">
-              {filteredAssignments.map((assignment) => (
+              {assignments.map((assignment) => (
                 <AssignmentSection
                   key={assignment.id}
                   assignment={assignment}
@@ -236,7 +167,6 @@ export const App: React.FC = () => {
                   onRemoveSuccess={handleRemoveSuccess}
                   onPreview={(record) => setPreviewRecord(record)}
                   onDownload={handleDownload}
-                  onUpdateAssignment={handleUpdateAssignment}
                 />
               ))}
             </div>

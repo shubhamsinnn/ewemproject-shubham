@@ -1,5 +1,5 @@
 import React from 'react';
-import { Layers, FileText } from 'lucide-react';
+import { Layers, FileText, Sparkles } from 'lucide-react';
 import { HeroGraphic } from './HeroGraphic';
 
 export const Hero: React.FC = () => {
@@ -18,23 +18,25 @@ export const Hero: React.FC = () => {
           {/* Left Column: Student Details & Intro */}
           <div className="hero-content">
             <div className="hero-tag">
+              <Sparkles size={13} color="#B8F3D5" />
               <span>ACADEMIC E-PORTFOLIO</span>
               <span>&bull;</span>
-              <span className="tag-accent">INFORMATION TECHNOLOGY</span>
+              <span className="tag-accent">EWEM (VEC02)</span>
             </div>
 
             <h1 className="hero-main-title">Shubham Singh</h1>
             <h2 className="hero-subheading">Learning. Building. Documenting.</h2>
 
             <p className="hero-description">
-              Welcome to my academic e-portfolio, a collection of my assignments, practical work, 
-              technical learning, and academic progress throughout my engineering journey.
+              Welcome to my official academic e-portfolio for <strong>EWEM — E-Waste &amp; Environmental Management (VEC02)</strong>. 
+              This portal houses my complete coursework assignments, technical concept syntheses, 
+              practical deliverables, and individual submission documentation.
             </p>
 
             {/* Student Details Card */}
             <div className="hero-student-meta-panel">
               <div className="meta-item">
-                <span className="meta-label">Name</span>
+                <span className="meta-label">Student Name</span>
                 <span className="meta-value">Shubham Singh</span>
               </div>
               <div className="meta-item">
@@ -42,12 +44,12 @@ export const Hero: React.FC = () => {
                 <span className="meta-value mono">24101C0076</span>
               </div>
               <div className="meta-item">
-                <span className="meta-label">Programme</span>
-                <span className="meta-value">B.Tech Engineering</span>
+                <span className="meta-label">Subject &amp; Code</span>
+                <span className="meta-value" style={{ color: 'var(--color-emerald)' }}>EWEM (VEC02)</span>
               </div>
               <div className="meta-item">
-                <span className="meta-label">Branch</span>
-                <span className="meta-value">Information Technology</span>
+                <span className="meta-label">Programme &amp; Branch</span>
+                <span className="meta-value">B.Tech &bull; Information Technology</span>
               </div>
             </div>
 
@@ -58,7 +60,7 @@ export const Hero: React.FC = () => {
                 className="btn btn-primary"
               >
                 <FileText size={18} />
-                Explore Assignments
+                Explore Assignment Spiral
               </button>
               <button
                 onClick={() => scrollTo('overview')}

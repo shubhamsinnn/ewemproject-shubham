@@ -1,5 +1,5 @@
 import React from 'react';
-import { User, Code2, Database, Network, Cpu, ShieldCheck } from 'lucide-react';
+import { User, Recycle, Leaf, ShieldCheck, Cpu, Database } from 'lucide-react';
 
 export const About: React.FC = () => {
   return (
@@ -13,7 +13,7 @@ export const About: React.FC = () => {
           </div>
           <h2 className="section-title">About Me</h2>
           <p className="section-subtitle">
-            An introduction to my engineering background, core academic interests, and technical foundation.
+            An introduction to my engineering background, environmental commitment, and academic coursework.
           </p>
         </div>
 
@@ -23,30 +23,30 @@ export const About: React.FC = () => {
             {/* Left Column: Narrative and Academic Focus */}
             <div>
               <p className="about-bio-text">
-                I am Shubham Singh, a B.Tech Engineering student in Information Technology. 
-                This portfolio serves as a structured record of my academic assignments, 
-                technical concepts, practical work, and learning progress.
+                I am <strong>Shubham Singh</strong>, a B.Tech Engineering student in Information Technology. 
+                This portfolio serves as a structured academic record of my assignments, technical concepts, 
+                practical coursework, and learning outcomes in <strong>EWEM — E-Waste &amp; Environmental Management (VEC02)</strong>.
               </p>
 
               {/* Academic Focus Subsection */}
               <div className="academic-focus-area">
-                <h4>Academic Focus</h4>
+                <h4>Academic &amp; Environmental Focus</h4>
                 <div className="focus-tags">
                   <div className="focus-tag" style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
-                    <Code2 size={16} />
-                    <span>Programming & Systems Development</span>
+                    <Recycle size={16} />
+                    <span>E-Waste Lifecycle &amp; Circular Economy</span>
+                  </div>
+                  <div className="focus-tag" style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
+                    <Leaf size={16} />
+                    <span>Environmental Impact &amp; Carbon Auditing</span>
                   </div>
                   <div className="focus-tag" style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
                     <Cpu size={16} />
-                    <span>Computer Science Fundamentals</span>
+                    <span>Sustainable IT &amp; Green Computing</span>
                   </div>
                   <div className="focus-tag" style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
                     <Database size={16} />
-                    <span>Analytical Thinking</span>
-                  </div>
-                  <div className="focus-tag" style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
-                    <Network size={16} />
-                    <span>Practical Problem-Solving</span>
+                    <span>Statutory Directives (EPR &amp; RoHS)</span>
                   </div>
                 </div>
               </div>
@@ -76,6 +76,11 @@ export const About: React.FC = () => {
                 <span className="meta-value">Information Technology</span>
               </div>
 
+              <div className="meta-item">
+                <span className="meta-label">Course Subject</span>
+                <span className="meta-value" style={{ color: 'var(--color-emerald)' }}>EWEM (VEC02)</span>
+              </div>
+
               <div 
                 style={{
                   marginTop: '8px',
@@ -90,7 +95,7 @@ export const About: React.FC = () => {
                 }}
               >
                 <ShieldCheck size={16} />
-                <span>Verified Academic Record</span>
+                <span>Verified Academic Record &bull; VEC02</span>
               </div>
             </div>
           </div>

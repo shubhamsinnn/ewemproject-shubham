@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Menu, X, BookOpen } from 'lucide-react';
+import { Menu, X, Leaf } from 'lucide-react';
 
 interface NavbarProps {
   activeSection: string;
@@ -25,12 +25,12 @@ export const Navbar: React.FC<NavbarProps> = ({ activeSection }) => {
           onClick={(e) => { e.preventDefault(); scrollTo('home'); }}
           className="nav-brand"
         >
-          <div className="nav-logo-mark">
-            <BookOpen size={20} strokeWidth={2.5} />
+          <div className="nav-logo-mark" style={{ background: 'linear-gradient(135deg, var(--color-navy) 0%, var(--color-emerald) 100%)' }}>
+            <Leaf size={20} strokeWidth={2.5} color="#B8F3D5" />
           </div>
           <div className="nav-brand-title">
             <span>SHUBHAM SINGH</span>
-            <span>Academic E-Portfolio</span>
+            <span>EWEM Portfolio &bull; VEC02</span>
           </div>
         </a>
 
@@ -55,14 +55,14 @@ export const Navbar: React.FC<NavbarProps> = ({ activeSection }) => {
             onClick={(e) => { e.preventDefault(); scrollTo('assignments'); }}
             className={`nav-link-item ${activeSection === 'assignments' ? 'active' : ''}`}
           >
-            Assignments
+            Assignment Spiral
           </a>
           <a
             href="#about"
             onClick={(e) => { e.preventDefault(); scrollTo('about'); }}
             className={`nav-link-item ${activeSection === 'about' ? 'active' : ''}`}
           >
-            About
+            About Me
           </a>
 
           {/* Roll Number Highlighted Badge */}
@@ -100,13 +100,13 @@ export const Navbar: React.FC<NavbarProps> = ({ activeSection }) => {
           href="#assignments"
           onClick={(e) => { e.preventDefault(); scrollTo('assignments'); }}
         >
-          Assignments
+          Assignment Spiral
         </a>
         <a
           href="#about"
           onClick={(e) => { e.preventDefault(); scrollTo('about'); }}
         >
-          About
+          About Me
         </a>
         <div className="nav-roll-badge" style={{ alignSelf: 'flex-start', marginTop: '8px' }}>
           <span className="nav-roll-dot"></span>

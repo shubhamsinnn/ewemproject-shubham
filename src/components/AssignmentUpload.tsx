@@ -129,14 +129,14 @@ export const AssignmentUpload: React.FC<AssignmentUploadProps> = ({
       />
 
       <div className="submission-zone-header">
-        <span>Assignment Submission</span>
+        <span>Upload Your Submission</span>
         {uploadedRecord ? (
           <span style={{ color: 'var(--color-emerald)', fontSize: '0.75rem', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '4px' }}>
             <FileCheck size={14} /> Uploaded
           </span>
         ) : (
           <span style={{ color: 'var(--color-text-muted)', fontSize: '0.75rem' }}>
-            Pending Submission
+            No Submission Yet
           </span>
         )}
       </div>

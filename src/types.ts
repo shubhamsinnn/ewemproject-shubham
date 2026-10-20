@@ -2,11 +2,12 @@ export interface Assignment {
   id: string;
   number: string;
   title: string;
+  activityTitle: string;
+  subtitle: string;
   subject: string;
   overview: string;
+  whatILearned: string;
   keyTopics: string[];
-  learningOutcome: string;
-  isPlaceholder?: boolean;
 }
 
 export interface UploadedFileRecord {
@@ -22,7 +23,6 @@ export interface UploadedFileRecord {
 
 export interface OverviewStats {
   totalAssignments: number;
-  uniqueSubjects: number;
   submittedCount: number;
   pendingCount: number;
 }
