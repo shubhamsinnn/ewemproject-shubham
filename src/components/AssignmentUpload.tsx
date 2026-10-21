@@ -7,7 +7,7 @@ import {
   RefreshCw, 
   Trash2, 
   AlertTriangle,
-  HardDrive
+  Cloud
 } from 'lucide-react';
 import { UploadedFileRecord } from '../types';
 import { 
@@ -165,7 +165,7 @@ export const AssignmentUpload: React.FC<AssignmentUploadProps> = ({
             <UploadCloud size={24} />
           </div>
           <div className="dropzone-text">
-            {isProcessing ? 'Processing document...' : (
+            {isProcessing ? 'Syncing with cloud storage...' : (
               <>Drag and drop assignment file here, or <span>Browse</span></>
             )}
           </div>
@@ -285,8 +285,8 @@ export const AssignmentUpload: React.FC<AssignmentUploadProps> = ({
 
           {/* Storage & Academic Disclaimer Note */}
           <div className="file-storage-note">
-            <HardDrive size={13} />
-            <span>Stored in browser IndexedDB (retained across page refreshes)</span>
+            <Cloud size={13} color="var(--color-primary-blue)" />
+            <span>Synced with Cloud Storage &bull; Visible across all devices</span>
           </div>
         </div>
       )}

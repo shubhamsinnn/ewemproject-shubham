@@ -17,6 +17,8 @@ export interface UploadedFileRecord {
   fileType: string;
   uploadedAt: string;
   blob?: Blob;
+  fileUrl?: string;
+  downloadUrl?: string;
   previewUrl?: string;
   textContent?: string;
 }

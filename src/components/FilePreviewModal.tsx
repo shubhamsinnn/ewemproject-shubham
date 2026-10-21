@@ -33,6 +33,7 @@ export const FilePreviewModal: React.FC<FilePreviewModalProps> = ({
   const ext = record.fileName.split('.').pop()?.toLowerCase() || '';
   const isImage = ['png', 'jpg', 'jpeg'].includes(ext);
   const isPdf = ext === 'pdf';
+  const fileSrc = objectUrl || record.fileUrl || '';
 
   return (
     <div className="modal-backdrop" onClick={onClose}>
@@ -60,23 +61,23 @@ export const FilePreviewModal: React.FC<FilePreviewModalProps> = ({
 
         {/* Modal Body */}
         <div className="modal-body">
-          {isImage && objectUrl && (
+          {isImage && fileSrc && (
             <img 
-              src={objectUrl} 
+              src={fileSrc} 
               alt={record.fileName} 
               className="preview-image" 
             />
           )}
 
-          {isPdf && objectUrl && (
+          {isPdf && fileSrc && (
             <iframe
-              src={objectUrl}
+              src={fileSrc}
               title={record.fileName}
               className="preview-iframe"
             />
           )}
 
-          {!isImage && !isPdf && (
+          {(!isImage && !isPdf) || !fileSrc ? (
             <div className="preview-document-card">
               <div 
                 style={{
@@ -109,7 +110,7 @@ export const FilePreviewModal: React.FC<FilePreviewModalProps> = ({
                 Download Document ({formatBytes(record.fileSize)})
               </button>
             </div>
-          )}
+          ) : null}
         </div>
 
         {/* Modal Footer */}

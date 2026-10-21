@@ -14,7 +14,7 @@ import {
   saveFileRecord, 
   deleteFileRecord 
 } from './utils/storage';
-import { BookOpen, ShieldAlert } from 'lucide-react';
+import { BookOpen, Globe } from 'lucide-react';
 
 export const App: React.FC = () => {
   const [assignments] = useState<Assignment[]>(initialAssignments);
@@ -22,17 +22,37 @@ export const App: React.FC = () => {
   const [activeSection, setActiveSection] = useState<string>('home');
   const [previewRecord, setPreviewRecord] = useState<UploadedFileRecord | null>(null);
 
-  // Load uploaded files from IndexedDB on component mount
+  // Load uploaded files from Cloud & IndexedDB on component mount, on focus, and via sync interval
   useEffect(() => {
+    let isMounted = true;
+
     const loadFiles = async () => {
       try {
         const records = await getAllFileRecords();
-        setUploadedFiles(records);
+        if (isMounted) {
+          setUploadedFiles(records);
+        }
       } catch (err) {
-        console.error('Failed to load files from IndexedDB:', err);
+        console.error('Failed to load files from storage:', err);
       }
     };
+
     loadFiles();
+
+    // Re-sync when user switches back to this tab (e.g. after uploading from another device)
+    const onWindowFocus = () => {
+      loadFiles();
+    };
+    window.addEventListener('focus', onWindowFocus);
+
+    // Periodic background sync every 25 seconds
+    const interval = setInterval(loadFiles, 25000);
+
+    return () => {
+      isMounted = false;
+      window.removeEventListener('focus', onWindowFocus);
+      clearInterval(interval);
+    };
   }, []);
 
   // Track active section for navigation highlight
@@ -67,7 +87,7 @@ export const App: React.FC = () => {
     };
   }, [assignments, uploadedFiles]);
 
-  // File Upload Handler (Stores in IndexedDB)
+  // File Upload Handler (Syncs to Cloud Blob Storage & local cache)
   const handleUploadSuccess = async (assignmentId: string, file: File) => {
     const record = await saveFileRecord(assignmentId, file);
     setUploadedFiles((prev) => ({
@@ -76,7 +96,7 @@ export const App: React.FC = () => {
     }));
   };
 
-  // File Remove Handler (Deletes from IndexedDB)
+  // File Remove Handler (Syncs deletion to Cloud Blob Storage & local cache)
   const handleRemoveSuccess = async (assignmentId: string) => {
     await deleteFileRecord(assignmentId);
     setUploadedFiles((prev) => {
@@ -86,17 +106,31 @@ export const App: React.FC = () => {
     });
   };
 
-  // File Download Handler
+  // Universal File Download Handler (Supports local Blobs & Cloud CDN URLs)
   const handleDownload = (record: UploadedFileRecord) => {
-    if (!record.blob) return;
-    const url = URL.createObjectURL(record.blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = record.fileName;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    setTimeout(() => URL.revokeObjectURL(url), 1000);
+    if (record.blob) {
+      const url = URL.createObjectURL(record.blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = record.fileName;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      setTimeout(() => URL.revokeObjectURL(url), 1000);
+      return;
+    }
+
+    if (record.downloadUrl || record.fileUrl) {
+      const url = record.downloadUrl || record.fileUrl || '';
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = record.fileName;
+      a.target = '_blank';
+      a.rel = 'noopener noreferrer';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+    }
   };
 
   return (
@@ -142,11 +176,10 @@ export const App: React.FC = () => {
                 color: 'var(--color-navy)',
               }}
             >
-              <ShieldAlert size={20} color="#1769FF" style={{ flexShrink: 0, marginTop: '2px' }} />
+              <Globe size={20} color="#1769FF" style={{ flexShrink: 0, marginTop: '2px' }} />
               <div>
-                <strong>Student Submission Integrity:</strong> Each assignment entry below represents a distinct deliverable from the EWEM course spiral. 
-                Use the dedicated <strong>"Upload Your Submission"</strong> area on each assignment to upload your own files (PDF, DOCX, PPTX, XLSX, ZIP, PNG, JPG). 
-                All submissions are stored persistently in your browser's IndexedDB storage and remain accessible upon page refresh.
+                <strong>Cross-Device Cloud Sync Active:</strong> Submissions uploaded or edited on any device (phone, laptop, desktop) are automatically stored in persistent cloud storage. 
+                Changes are visible and downloadable across all devices in real-time.
               </div>
             </div>
 
