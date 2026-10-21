@@ -1,8 +1,9 @@
 import { generateClientTokenFromReadWriteToken } from '@vercel/blob/client';
 
-const BLOB_TOKEN =
+const RAW_TOKEN =
   process.env.BLOB_READ_WRITE_TOKEN ||
   'vercel_blob_rw_IBQBG2FC8F0lS8rA_sLVdjgD0DhSRMJzsPpE0yVdFBs5WIj';
+const BLOB_TOKEN = RAW_TOKEN.trim();
 
 export default async function handler(req: any, res: any) {
   res.setHeader('Access-Control-Allow-Origin', '*');

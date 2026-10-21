@@ -1,8 +1,9 @@
 import { put } from '@vercel/blob';
 
-const BLOB_TOKEN =
+const RAW_TOKEN =
   process.env.BLOB_READ_WRITE_TOKEN ||
   'vercel_blob_rw_IBQBG2FC8F0lS8rA_sLVdjgD0DhSRMJzsPpE0yVdFBs5WIj';
+const BLOB_TOKEN = RAW_TOKEN.trim();
 const PUBLIC_BLOB_BASE = 'https://ibqbg2fc8f0ls8ra.public.blob.vercel-storage.com';
 
 export default async function handler(req: any, res: any) {
@@ -25,7 +26,6 @@ export default async function handler(req: any, res: any) {
       return res.status(400).json({ error: 'Missing required assignment record' });
     }
 
-    // Fetch existing assignments index
     const indexUrl = `${PUBLIC_BLOB_BASE}/${student}/assignments.json?t=${Date.now()}`;
     let records: Record<string, any> = {};
     try {
@@ -39,7 +39,6 @@ export default async function handler(req: any, res: any) {
 
     records[record.assignmentId] = record;
 
-    // Save updated index back to Vercel Blob
     await put(`${student}/assignments.json`, JSON.stringify(records, null, 2), {
       access: 'public',
       addRandomSuffix: false,
