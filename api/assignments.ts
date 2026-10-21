@@ -1,6 +1,3 @@
-export const config = {
-  runtime: 'edge',
-};
 
 const BLOB_TOKEN =
   process.env.BLOB_READ_WRITE_TOKEN ||
