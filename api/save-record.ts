@@ -1,8 +1,9 @@
 import { put } from '@vercel/blob';
 
-const BLOB_TOKEN =
+const RAW_TOKEN =
   process.env.BLOB_READ_WRITE_TOKEN ||
   'vercel_blob_rw_IBQBG2FC8F0lS8rA_sLVdjgD0DhSRMJzsPpE0yVdFBs5WIj';
+const BLOB_TOKEN = RAW_TOKEN.trim();
 const PUBLIC_BLOB_BASE = 'https://ibqbg2fc8f0ls8ra.public.blob.vercel-storage.com';
 
 export default async function handler(req: any, res: any) {
