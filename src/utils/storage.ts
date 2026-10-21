@@ -1,3 +1,4 @@
+import { put as clientPut } from '@vercel/blob/client';
 import { UploadedFileRecord } from '../types';
 
 const DB_NAME = 'ShamitaEwemPortfolioDB';
@@ -8,7 +9,7 @@ const PUBLIC_BLOB_BASE = 'https://ibqbg2fc8f0ls8ra.public.blob.vercel-storage.co
 
 function getApiBaseUrl(): string {
   if (typeof window === 'undefined') return '';
-  // If running locally on localhost without vercel dev, route API calls to the live backend
+  // If running locally on localhost without vercel dev, route API calls to the live deployed backend
   if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
     return 'https://shamita-ewem-portfolio.vercel.app';
   }
@@ -113,32 +114,55 @@ export async function saveFileRecord(
   file: File
 ): Promise<UploadedFileRecord> {
   const apiBase = getApiBaseUrl();
-  const formData = new FormData();
-  formData.append('file', file);
-  formData.append('assignmentId', assignmentId);
-  formData.append('student', STUDENT_ID);
+  const cleanName = file.name.replace(/[^a-zA-Z0-9._-]/g, '_');
+  const pathname = `${STUDENT_ID}/files/${assignmentId}_${Date.now()}_${cleanName}`;
 
   let record: UploadedFileRecord;
 
   try {
-    const res = await fetch(`${apiBase}/api/upload`, {
-      method: 'POST',
-      body: formData,
+    // 1. Obtain temporary client upload token
+    const tokenRes = await fetch(`${apiBase}/api/upload-token?pathname=${encodeURIComponent(pathname)}`);
+    if (!tokenRes.ok) {
+      throw new Error('Could not obtain upload credentials');
+    }
+    const { clientToken } = await tokenRes.json();
+
+    // 2. Upload file directly to Vercel Blob CDN using the client token
+    const blob = await clientPut(pathname, file, {
+      access: 'public',
+      token: clientToken,
     });
 
-    if (!res.ok) {
-      const errData = await res.json().catch(() => ({}));
-      throw new Error(errData.error || `Upload failed with status ${res.status}`);
-    }
-
-    const data = await res.json();
+    // 3. Save assignment metadata record to cloud
     record = {
-      ...data.record,
-      blob: file, // Keep local file instance for instant local preview if needed
+      assignmentId,
+      fileName: file.name,
+      fileSize: file.size,
+      fileType: file.type || getFallbackMimeType(file.name),
+      uploadedAt: new Date().toISOString(),
+      fileUrl: blob.url,
+      downloadUrl: blob.downloadUrl,
+      blob: file,
     };
+
+    await fetch(`${apiBase}/api/save-record`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        student: STUDENT_ID,
+        record: {
+          assignmentId: record.assignmentId,
+          fileName: record.fileName,
+          fileSize: record.fileSize,
+          fileType: record.fileType,
+          uploadedAt: record.uploadedAt,
+          fileUrl: record.fileUrl,
+          downloadUrl: record.downloadUrl,
+        },
+      }),
+    });
   } catch (err) {
-    console.error('Cloud upload error, falling back to local record:', err);
-    // Fallback local record if network fails
+    console.error('Cloud upload failed, falling back to local storage:', err);
     record = {
       assignmentId,
       fileName: file.name,

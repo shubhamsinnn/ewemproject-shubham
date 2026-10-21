@@ -1,54 +1,29 @@
+const PUBLIC_BLOB_BASE = 'https://ibqbg2fc8f0ls8ra.public.blob.vercel-storage.com';
 
-const BLOB_TOKEN =
-  process.env.BLOB_READ_WRITE_TOKEN ||
-  'vercel_blob_rw_IBQBG2FC8F0lS8rA_sLVdjgD0DhSRMJzsPpE0yVdFBs5WIj';
+export default async function handler(req: any, res: any) {
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+  res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
 
-const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
-  'Access-Control-Allow-Headers': 'Content-Type, Authorization',
-  'Cache-Control': 'no-cache, no-store, must-revalidate',
-};
-
-export default async function handler(request: Request) {
-  if (request.method === 'OPTIONS') {
-    return new Response(null, { status: 204, headers: corsHeaders });
+  if (req.method === 'OPTIONS') {
+    return res.status(204).end();
   }
 
+  const student = (req.query && req.query.student) || 'shamita';
+
   try {
-    const url = new URL(request.url);
-    const student = url.searchParams.get('student') || 'shamita';
+    const indexUrl = `${PUBLIC_BLOB_BASE}/${student}/assignments.json?t=${Date.now()}`;
+    const r = await fetch(indexUrl, { cache: 'no-store' });
 
-    // Direct fetch from public blob store index
-    const indexUrl = `https://ibqbg2fc8f0ls8ra.public.blob.vercel-storage.com/${student}/assignments.json?t=${Date.now()}`;
-    const res = await fetch(indexUrl, { cache: 'no-store' });
-
-    if (!res.ok) {
-      return new Response(
-        JSON.stringify({ success: true, student, records: {} }),
-        {
-          status: 200,
-          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-        }
-      );
+    if (!r.ok) {
+      return res.status(200).json({ success: true, student, records: {} });
     }
 
-    const records = await res.json();
-    return new Response(
-      JSON.stringify({ success: true, student, records: records || {} }),
-      {
-        status: 200,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      }
-    );
+    const records = await r.json();
+    return res.status(200).json({ success: true, student, records: records || {} });
   } catch (error: any) {
-    console.error('Error fetching assignments:', error);
-    return new Response(
-      JSON.stringify({ success: false, error: error.message, records: {} }),
-      {
-        status: 500,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      }
-    );
+    console.error('Assignments API error:', error);
+    return res.status(500).json({ success: false, error: error.message, records: {} });
   }
 }
